@@ -264,22 +264,20 @@ class ImagesLayout {
     }
     </style>
     
-    // 水平布局瀑布流容器
     <div id="horizontal-waterfull"></div>
     
     <script src="./imagesLayout.js"></script>
     <script>
-    // 待布局图片列表
     const images = [{
-      src: 'https://static.cxstore.top/images/lake.jpg',
+      src: 'https://sonysun-1305432147.cos.ap-nanjing.myqcloud.com/00A.jpg',
       width: 4000,
       height: 6000
     }, {
-      src: 'https://static.cxstore.top/images/japan.jpg',
+      src: 'https://sonysun-1305432147.cos.ap-nanjing.myqcloud.com/Alex.jpg',
       width: 1500,
       height: 1125
     }, {
-      src: 'https://static.cxstore.top/images/girl.jpg',
+      src: 'https://sonysun-1305432147.cos.ap-nanjing.myqcloud.com/Boys.jpg',
       width: 5616,
       height: 3266
     }, {
@@ -300,12 +298,12 @@ class ImagesLayout {
       height: 2916
     }]
     
-    // 获取布局容器
+    
     const $box = document.getElementById('horizontal-waterfull')
     
-    // 创建一个布局实例
+    
     const layout = new ImagesLayout(images, $box.clientWidth, 4)
-    // 通过 layout 的 completedImages 获取所有图片的布局信息
+    
     layout.completedImages.forEach(item => {
       let $imageBox = document.createElement('div')
       $imageBox.setAttribute('class', 'image-box')
