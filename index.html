@@ -132,6 +132,148 @@
 <img src="https://sonysun-1305432147.cos.ap-nanjing.myqcloud.com/00A.jpg" alt="my film" height="50%" >
 <img src="https://sonysun-1305432147.cos.ap-nanjing.myqcloud.com/Alex.jpg" alt="my film" height="50%">
 <img src="https://sonysun-1305432147.cos.ap-nanjing.myqcloud.com/Boys.jpg" alt="my film" height="50%">
-window.addEventListener("resize", this.onWindowSizeChanged);
+
+<div id="main">
+    <div class="pin">
+        <div class="box">
+            <img src="" />
+        </div>
+    </div>
+</div>
+*{padding: 0;margin:0;}
+#main{
+    position: relative;
+}
+.pin{
+    padding: 15px 0 0 15px;
+    float:left;
+}
+.box{
+    padding: 10px;
+    border:1px solid #ccc;
+    box-shadow: 0 0 6px #ccc;
+    border-radius: 5px;
+}
+.box img{
+    width:162px;
+    height:auto;
+}
+window.onload=function(){
+    waterfall('main','pin');
+    // 模拟JSON后台数据获取
+    var dataInt = {
+        'data':[
+            {'src':'0.jpg'},
+            {'src':'1.jpg'},
+            {'src':'2.jpg'},
+            {'src':'3.jpg'},
+            {'src':'4.jpg'},
+            {'src':'5.jpg'},
+            {'src':'6.jpg'},
+            {'src':'7.jpg'},
+            {'src':'8.jpg'},
+            {'src':'9.jpg'}
+        ]
+    };
+    // ==========================================================
+    //      鼠标滚动加载事件
+    // ==========================================================
+    window.onscroll = function(){
+        if(checkscrollside()){
+            // 获取父级对象
+            var oParent = document.getElementById('main');
+            for(var i = 0; i < dataInt.data.length; i++){
+                //添加div.pin
+                var oPin = document.createElement('div'); 
+                oPin.className = 'pin';                   
+                oParent.appendChild(oPin);              
+                //添加div.box
+                var oBox = document.createElement('div');
+                oBox.className = 'box';
+                oPin.appendChild(oBox);
+                //添加img
+                var oImg = document.createElement('img');
+                oImg.src = './images/'+dataInt.data[i].src;
+                oBox.appendChild(oImg);
+            }
+            waterfall('main','pin');
+        };
+    }
+}
+// ==========================================================
+//      瀑布流主函数
+// ==========================================================
+function waterfall(parent,pin){
+    // 通过父级获取数据块对象集合aPin
+    var oParent = document.getElementById(parent);
+    var aPin = getClassObj(oParent,pin);
+    // 获取单个块pin的宽
+    var iPinW = aPin[0].offsetWidth;
+    // 计算整个页面的列数
+    var num = Math.floor(document.documentElement.clientWidth/iPinW);
+    // 设置父级居中样式：定宽+自动水平外边距
+    oParent.style.cssText = 'width:' + iPinW * num + 'px;ma rgin:0 auto;';
+    // 用于存储每列中的所有块相加的高度。
+    var pinHArr = [];
+    // 遍历数组aPin的每个块元素
+    for(var i = 0; i < aPin.length; i++){
+        var pinH = aPin[i].offsetHeight;
+        if(i < num){
+            // 把第一行中的num个块pin先添加进数组pinHArr
+            pinHArr[i] = pinH; 
+        }else{
+            // 获取数组pinHArr中的最小值minH
+            var minH = Math.min.apply(null,pinHArr);
+            var minHIndex = getminHIndex(pinHArr,minH);
+            // 设置绝对位移
+            aPin[i].style.position = 'absolute';
+            aPin[i].style.top = minH + 'px';
+            aPin[i].style.left = aPin[minHIndex].offsetLeft + 'px';
+            // 数组中最小高高度 + 新添的aPin[i]块高，更新添加了块后的列高
+            pinHArr[minHIndex] += aPin[i].offsetHeight;
+        }
+    }
+}
+// ==========================================================
+//      封装getClassObj()，通过父级获取类
+// ==========================================================
+function getClassObj(parent,className){
+    // 获取父级的所有子集
+    var obj=parent.getElementsByTagName('*');
+    // 创建一个数组 用于收集子元素
+    var pinS=[];
+    // 遍历子元素、判断类别、压入数组
+    for (var i=0;i<obj.length;i++) {
+        if (obj[i].className==className){
+            pinS.push(obj[i]);
+        }
+    };
+    return pinS;
+}
+// ==========================================================
+//      获取pin高度最小的索引index
+// ==========================================================
+function getminHIndex(arr,minH){
+    for(var i in arr){
+        if(arr[i]==minH){
+            return i;
+        }
+    }
+}
+// ==========================================================
+//      检测是否具备滚动加载数据块的条件
+// ==========================================================
+function checkscrollside(){
+    var oParent = document.getElementById('main');
+    var aPin = getClassObj(oParent,'pin');
+    // 最后一个块框的距离页面顶端+自身高的一半(实现未滚到底就开始加载)
+    var lastPinH = aPin[aPin.length-1].offsetTop + Math.floor(aPin[aPin.length-1].offsetHeight/2);
+    // 获取视界顶端到页面顶端的距离
+    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    // 获取视界高度
+    var documentH = document.documentElement.clientHeight;
+    // 到达指定高度后，返回true，触发waterfall()函数
+    return (lastPinH < scrollTop + documentH) ? true : false;
+}
 
 </html>
